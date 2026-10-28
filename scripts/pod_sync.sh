@@ -3,6 +3,7 @@
 # Uses a git bundle over SSH, so a private repo needs no extra credentials.
 #
 #   scripts/pod_sync.sh sae-pod        # an SSH host alias from ~/.ssh/config
+#   SSH_OPTS="-p 22115 -i ~/.ssh/key" scripts/pod_sync.sh root@1.2.3.4
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
@@ -12,8 +13,8 @@ if [[ -n "$(git status --porcelain)" ]]; then
   echo "warning: uncommitted changes are not synced; commit them first" >&2
 fi
 
-git bundle create - --all | ssh "$host" 'cat > /workspace/sae.bundle'
-ssh "$host" bash -s -- "$branch" <<'REMOTE'
+git bundle create - --all | ssh ${SSH_OPTS:-} "$host" 'cat > /workspace/sae.bundle'
+ssh ${SSH_OPTS:-} "$host" bash -s -- "$branch" <<'REMOTE'
 set -euo pipefail
 branch=$1
 repo=/workspace/sparse-autoencoder
