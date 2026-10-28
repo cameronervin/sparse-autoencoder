@@ -18,7 +18,7 @@ This repo trains a TopK SAE ([Gao et al., 2024](https://arxiv.org/abs/2406.04093
 - **Training.** Adam with lr 2e-4, batch size 4096 tokens, linear warmup, and linear decay over the last 20% of steps. The full run was on one A40 GPU on RunPod. Development ran locally on an M1.
 - **Evaluation.** The SAE is measured on held-out text. The main number is *CE loss recovered*: splice the SAE's reconstruction into GPT-2 in place of the real activation, and measure how much of the gap between the clean loss and the zero-ablated loss it closes.
 - **Comparison.** The same evaluation runs on the public `gpt2-small-res-jb` SAE for the same hook, loaded with [SAELens](https://github.com/jbloomAus/SAELens). Features are matched by the cosine similarity of their decoder directions.
-- **Labels.** A random sample of live features gets labels from Claude Haiku, which reads each feature's top-activating snippets and the output tokens it promotes. Some labels were checked by hand.
+- **Labels.** A random sample of live features gets labels from an OpenAI model (`gpt-5.6-luna`), which reads each feature's top-activating snippets and the output tokens it promotes. Some labels were checked by hand.
 - **Steering.** Adding a feature's decoder direction to the residual stream during generation shows what the feature does, as well as what it detects.
 
 ## Repo layout
@@ -31,7 +31,7 @@ src/gpt2_sae/
   evaluate.py      FVU, L0, dead latents, CE loss recovered
   compare.py       gpt2-small-res-jb adapter and decoder matching
   features.py      top contexts, histograms, logit lens per latent
-  autointerp.py    Claude Haiku labels
+  autointerp.py    LLM labels (OpenAI)
   steer.py         generation with a feature added
   export.py        JSON for the browser
 site/              static feature browser (GitHub Pages)
@@ -56,7 +56,7 @@ scripts/pod_sync.sh <ssh-host>                          # copy the repo to a Run
 bash scripts/pod_run.sh configs/full.yaml               # train, evaluate + compare, collect features
 # back on the laptop:
 scripts/pod_fetch.sh <ssh-host>
-uv run gpt2-sae label  --config configs/full.yaml       # needs ANTHROPIC_API_KEY
+uv run gpt2-sae label  --config configs/full.yaml       # needs OPENAI_API_KEY
 uv run gpt2-sae steer  --config configs/full.yaml --features <ids>
 uv run gpt2-sae export --config configs/full.yaml
 python -m http.server -d site                           # view the browser locally

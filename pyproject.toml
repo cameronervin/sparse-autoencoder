@@ -22,8 +22,8 @@ dependencies = [
 [project.optional-dependencies]
 # Loads the pretrained gpt2-small-res-jb SAE for the comparison.
 compare = ["sae-lens>=6,<7"]
-# Auto-labels features with Claude. Needs ANTHROPIC_API_KEY.
-label = ["anthropic>=0.60"]
+# Auto-labels features with an OpenAI model. Needs OPENAI_API_KEY.
+label = ["openai>=1.60"]
 
 [project.scripts]
 gpt2-sae = "gpt2_sae.cli:main"

@@ -1,7 +1,6 @@
-"""Label features with Claude Haiku, from their top-activating contexts and logit-lens tokens.
+"""Label features with an OpenAI model, from their top-activating contexts and logit-lens tokens.
 
-Needs ANTHROPIC_API_KEY (or another credential the Anthropic SDK can find). Without one,
-labels come from configs/hand_labels.yaml instead.
+Needs OPENAI_API_KEY. Without it, labels come from configs/hand_labels.yaml instead.
 """
 
 from __future__ import annotations
@@ -18,7 +17,7 @@ from tqdm import tqdm
 
 from gpt2_sae.features import window
 
-MODEL = "claude-haiku-5-5"
+MODEL = "gpt-5.6-luna"
 
 SYSTEM = """You label features of a sparse autoencoder trained on GPT-2 small's residual stream.
 You get text snippets where one feature fires. In each snippet the token where it fires most
@@ -69,9 +68,9 @@ def label_features(
     stats: dict[str, Tensor], tokenizer, features: list[int], out_path: Path
 ) -> dict[int, dict]:
     """Label each feature, appending results to out_path (JSONL) so a rerun skips done ones."""
-    import anthropic
+    from openai import OpenAI
 
-    client = anthropic.Anthropic()
+    client = OpenAI()
     done: dict[int, dict] = {}
     if out_path.exists():
         for line in out_path.read_text().splitlines():
@@ -80,17 +79,17 @@ def label_features(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("a") as f:
         for feature in tqdm([x for x in features if x not in done]):
-            response = client.messages.parse(
+            response = client.responses.parse(
                 model=MODEL,
-                max_tokens=1024,
-                output_config={"effort": "low"},
-                system=SYSTEM,
-                messages=[{"role": "user", "content": prompt_for(stats, tokenizer, feature)}],
-                output_format=Label,
+                instructions=SYSTEM,
+                input=prompt_for(stats, tokenizer, feature),
+                text_format=Label,
+                reasoning={"effort": "low"},
+                store=False,
             )
-            if response.stop_reason == "refusal" or response.parsed_output is None:
+            if response.output_parsed is None:
                 continue
-            row = {"feature": feature, "source": MODEL, **response.parsed_output.model_dump()}
+            row = {"feature": feature, "source": MODEL, **response.output_parsed.model_dump()}
             f.write(json.dumps(row) + "\n")
             f.flush()
             done[feature] = row

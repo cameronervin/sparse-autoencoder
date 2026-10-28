@@ -170,7 +170,7 @@ def main() -> None:
         "--compare", action="store_true", help="also evaluate gpt2-small-res-jb and match features"
     )
     add("features", "collect top contexts and stats per latent")
-    add("label", "label a random sample of features with Claude Haiku")
+    add("label", "label a random sample of features with an OpenAI model")
     p = add("steer", "generate text with a feature added to the residual stream")
     p.add_argument("--features", type=int, nargs="+", required=True)
     p.add_argument("--coefs", type=float, nargs="+", default=[0.0, 1.0, 2.0])
