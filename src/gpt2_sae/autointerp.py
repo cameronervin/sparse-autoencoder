@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import random
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import torch
@@ -65,7 +66,7 @@ def prompt_for(stats: dict[str, Tensor], tokenizer, feature: int, n_snippets: in
 
 
 def label_features(
-    stats: dict[str, Tensor], tokenizer, features: list[int], out_path: Path
+    stats: dict[str, Tensor], tokenizer, features: list[int], out_path: Path, workers: int = 8
 ) -> dict[int, dict]:
     """Label each feature, appending results to out_path (JSONL) so a rerun skips done ones."""
     from openai import OpenAI
@@ -76,23 +77,30 @@ def label_features(
         for line in out_path.read_text().splitlines():
             row = json.loads(line)
             done[row["feature"]] = row
+    todo = [x for x in features if x not in done]
+    prompts = {f: prompt_for(stats, tokenizer, f) for f in todo}
+
+    def ask(feature: int) -> dict | None:
+        response = client.responses.parse(
+            model=MODEL,
+            instructions=SYSTEM,
+            input=prompts[feature],
+            text_format=Label,
+            reasoning={"effort": "low"},
+            store=False,
+        )
+        if response.output_parsed is None:
+            return None
+        return {"feature": feature, "source": MODEL, **response.output_parsed.model_dump()}
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    with out_path.open("a") as f:
-        for feature in tqdm([x for x in features if x not in done]):
-            response = client.responses.parse(
-                model=MODEL,
-                instructions=SYSTEM,
-                input=prompt_for(stats, tokenizer, feature),
-                text_format=Label,
-                reasoning={"effort": "low"},
-                store=False,
-            )
-            if response.output_parsed is None:
+    with out_path.open("a") as f, ThreadPoolExecutor(workers) as pool:
+        for row in tqdm(pool.map(ask, todo), total=len(todo)):
+            if row is None:
                 continue
-            row = {"feature": feature, "source": MODEL, **response.output_parsed.model_dump()}
             f.write(json.dumps(row) + "\n")
             f.flush()
-            done[feature] = row
+            done[row["feature"]] = row
     return done
 
 
