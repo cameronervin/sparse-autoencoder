@@ -7,6 +7,8 @@ ws=/workspace
 cat > "$ws/env.sh" <<ENV
 # RunPod puts pod env vars (including secrets) in this file; SSH sessions don't inherit them.
 [[ -f /etc/rp_environment ]] && source /etc/rp_environment
+# The image turns on hf_transfer, which is not in this project's venv.
+export HF_HUB_ENABLE_HF_TRANSFER=0
 export PATH=$ws/.local/bin:\$PATH
 export UV_CACHE_DIR=$ws/.uv-cache UV_PYTHON_INSTALL_DIR=$ws/.uv-python HF_HOME=$ws/hf
 # nproc reports the host's CPUs, not the pod's quota.
