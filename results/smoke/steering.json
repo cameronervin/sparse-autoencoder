@@ -1,0 +1,38 @@
+[
+ {
+  "feature": 3784,
+  "label": null,
+  "samples": [
+   {
+    "prompt": "I think the most important thing is",
+    "coef": 0.0,
+    "text": " to get to know the person you are talking to. Because that's what I have to do. And I do that every day. I want to tell you what I've done for the past 18"
+   },
+   {
+    "prompt": "I think the most important thing is",
+    "coef": 4.0,
+    "text": "nPageNfLhthe]GtWTrdThtSpeiFaTtcfCatP13RedTacPTtRedtPdvNNt"
+   },
+   {
+    "prompt": "Yesterday I went to the",
+    "coef": 0.0,
+    "text": " Olympic Trials to complete the short to the Olympic Marathon. This is the first time I've run under the Olympic flag on my life. I love this country and love what it has to offer. I"
+   },
+   {
+    "prompt": "Yesterday I went to the",
+    "coef": 4.0,
+    "text": "nPageN1lthetTGCDtTrdSpetransVisionNdFireT4PlayCatP13RedTacPTtRedtPdMnNt"
+   },
+   {
+    "prompt": "The new report says that",
+    "coef": 0.0,
+    "text": " more than 6 million people have been affected by climate change, with the number of people living in developing countries experiencing serious and irreversible health problems.\n\nThe report, by the UK's Climate Research UK"
+   },
+   {
+    "prompt": "The new report says that",
+    "coef": 4.0,
+    "text": "thePageN09L1tMnCDtTrdSpeWSVNdFireCl4NotForFP13RedTTheRoundTtRedtMediScientDevNt"
+   }
+  ]
+ }
+]

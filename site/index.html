@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GPT-2 SAE Features</title>
+  <meta name="description" content="Browse features from a TopK sparse autoencoder trained on GPT-2 small, layer 6.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <h1>GPT-2 SAE features</h1>
+      <p class="sub" id="run-line">TopK sparse autoencoder on GPT-2 small, layer 6 residual stream.</p>
+      <nav class="tabs" role="tablist">
+        <button role="tab" data-tab="features" aria-selected="true">Features</button>
+        <button role="tab" data-tab="steering" aria-selected="false">Steering</button>
+        <button role="tab" data-tab="results" aria-selected="false">Results</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="tab-features" class="tab-panel">
+      <div class="browser">
+        <aside class="list-pane">
+          <div class="controls">
+            <input id="search" type="search" placeholder="Search label, id or token" aria-label="Search features">
+            <select id="sort" aria-label="Sort features">
+              <option value="labeled">Labeled first</option>
+              <option value="density">Most frequent</option>
+              <option value="max_act">Largest activation</option>
+              <option value="match">Best jb match</option>
+              <option value="id">Feature id</option>
+            </select>
+          </div>
+          <p class="count" id="count"></p>
+          <ul id="feature-list" class="feature-list"></ul>
+        </aside>
+        <article id="detail" class="detail">
+          <p class="muted">Pick a feature from the list.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="tab-steering" class="tab-panel" hidden>
+      <p class="lede">Each row adds one feature's decoder direction to the residual stream at layer 6
+        while GPT-2 generates. The coefficient is in units of the feature's largest natural
+        activation. Same prompt and seed in every row of a group.</p>
+      <div id="steering"></div>
+    </section>
+
+    <section id="tab-results" class="tab-panel" hidden>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Feature ids link to <a href="https://www.neuronpedia.org/gpt2-small/6-res-jb">Neuronpedia</a>
+      for the closest latent in the pretrained <code>gpt2-small-res-jb</code> SAE.
+      Source on <a id="repo-link" href="https://github.com/">GitHub</a>.</p>
+  </footer>
+
+  <div id="tooltip" class="tooltip" role="status" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

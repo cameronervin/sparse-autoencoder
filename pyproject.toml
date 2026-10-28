@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gpt2-sae"
+version = "0.1.0"
+description = "A TopK sparse autoencoder trained from scratch on GPT-2 small's residual stream"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Cameron Ervin" }]
+dependencies = [
+  "datasets>=3.6,<5",
+  "matplotlib>=3.9,<4",
+  "pyyaml>=6.0.2,<7",
+  "torch>=2.6,<3",
+  "tqdm>=4.66,<5",
+  "transformer-lens>=2.15,<3",
+]
+
+[project.optional-dependencies]
+# Loads the pretrained gpt2-small-res-jb SAE for the comparison.
+compare = ["sae-lens>=6,<7"]
+# Auto-labels features with Claude. Needs ANTHROPIC_API_KEY.
+label = ["anthropic>=0.60"]
+
+[project.scripts]
+gpt2-sae = "gpt2_sae.cli:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3,<10",
+  "ruff>=0.11,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gpt2_sae"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["artifacts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+markers = ["slow: downloads models or data; skipped by default with -m 'not slow'"]
+
+[tool.uv]
+# transformer-lens pins numpy<2 on Python 3.11; newer pyarrow wheels need numpy 2.
+constraint-dependencies = ["pyarrow<22"]

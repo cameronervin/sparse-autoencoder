@@ -1,0 +1,17 @@
+# Local check on an M1: a small SAE on 1M tokens. Proves the loop runs and the loss falls.
+name: smoke
+sae:
+  d_sae: 4096
+  k: 32
+  k_aux: 384
+  dead_after_tokens: 250_000
+total_tokens: 1_000_000
+buffer_size: 65_536
+model_batch_rows: 32
+warmup_steps: 20
+log_every: 10
+ckpt_every: 100
+eval_batches: 5
+feature_tokens: 100_000
+n_label: 5
+n_export_extra: 30

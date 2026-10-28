@@ -1,0 +1,4 @@
+# Hand labels. These override model labels for the same feature id.
+# 1234:
+#   label: closing parentheses in code
+#   description: Fires on ")" tokens that close a function call.

@@ -1,0 +1,15 @@
+# Main run on a single CUDA GPU. Width matches gpt2-small-res-jb (24576) for the comparison.
+name: full
+sae:
+  d_sae: 24576
+  k: 32
+  k_aux: 384
+  dead_after_tokens: 10_000_000
+device: cuda
+total_tokens: 200_000_000
+buffer_size: 1_048_576
+model_batch_rows: 256
+lr: 2.0e-4
+warmup_steps: 1000
+log_every: 100
+ckpt_every: 5000
