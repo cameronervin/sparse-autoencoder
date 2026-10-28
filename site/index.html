@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GPT-2 SAE Features</title>
   <meta name="description" content="Browse features from a TopK sparse autoencoder trained on GPT-2 small, layer 6.">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <header class="top">
@@ -46,7 +46,8 @@
     <section id="tab-steering" class="tab-panel" hidden>
       <p class="lede">Each row adds one feature's decoder direction to the residual stream at layer 6
         while GPT-2 generates. The coefficient is in units of the feature's largest natural
-        activation. Same prompt and seed in every row of a group.</p>
+        activation. Same prompt and seed in every row of a group. At 4× the text breaks down,
+        so those rows are not shown.</p>
       <div id="steering"></div>
     </section>
 
@@ -62,6 +63,6 @@
   </footer>
 
   <div id="tooltip" class="tooltip" role="status" hidden></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

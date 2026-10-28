@@ -46,7 +46,7 @@ def context_records(
     n_contexts: int = 10,
     before: int = 24,
     after: int = 6,
-    batch_rows: int = 64,
+    batch_rows: int = 16,
 ) -> dict[int, list[dict]]:
     """For each feature, its top contexts as token strings with that feature's activation per token.
 

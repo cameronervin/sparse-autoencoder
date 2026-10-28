@@ -335,6 +335,14 @@ async function init() {
     showFeature(Number(a.dataset.goto));
   });
 
+  window.addEventListener("hashchange", () => {
+    const id = Number(new URLSearchParams(location.hash.slice(1)).get("f"));
+    if (Number.isFinite(id) && id !== state.selected) {
+      setTab("features");
+      showFeature(id);
+    }
+  });
+
   const fromHash = Number(new URLSearchParams(location.hash.slice(1)).get("f"));
   const first = sortedFiltered()[0];
   if (Number.isFinite(fromHash) && location.hash) showFeature(fromHash);

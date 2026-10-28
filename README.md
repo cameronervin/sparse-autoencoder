@@ -2,7 +2,71 @@
 
 A sparse autoencoder (SAE) trained from scratch on GPT-2 small, plus a browser for the features it learned.
 
-<!-- RESULTS -->
+**[Browse the features](PAGES_URL)** · 24,576 features · k = 32 · GPT-2 small, layer 6 residual stream · 200M training tokens
+
+## Results
+
+On 203k held-out OpenWebText tokens, compared against the public `gpt2-small-res-jb` SAE for the same layer:
+
+| | This SAE | gpt2-small-res-jb |
+|---|---:|---:|
+| CE loss recovered | **0.991** | 0.982 |
+| Fraction of variance unexplained | **0.113** | 0.134 |
+| L0 (active features per token) | 32 | 51.9 |
+| Dead features on eval text | 0.5% | 0.05% |
+| CE loss: clean / with SAE / zeroed | 3.679 / 3.760 / 12.470 | 3.679 / 3.833 / 12.470 |
+
+Splicing this SAE into GPT-2 raises next-token loss by 0.08 nats, which is about 1% of the gap to zero-ablating the layer. It uses fewer active features per token than jb's SAE and reconstructs better. That matches the claim in the TopK paper. The comparison is not exact: jb's SAE was trained with an L1 penalty, different hyperparameters and a different token budget.
+
+![Training curves](results/full/training.png)
+
+Reconstruction stops improving much after about 60M tokens. Aux-k kept dead features near zero: at most 4 of 24,576 were dead at any point. 3 never fired on the 5M tokens used for feature stats.
+
+![Decoder match](results/full/match_hist.png)
+
+For each of our features, this plot shows the cosine similarity between its decoder direction and the closest jb feature. The median is 0.70, and 10% are above 0.9. So the two SAEs share a core of common directions but split the space differently. Each feature in the browser links to its closest jb feature on Neuronpedia.
+
+### Labels
+
+200 live features were picked at random and labeled by `gpt-5.6-luna`. I checked 12 of them against their top contexts: 10 were correct and 2 were close but too broad or too narrow ([spot check](results/full/spot_check.md)). The model's self-reported confidence was not useful. Its median was 0.99.
+
+Some labeled features:
+
+| Feature | Label | Fires on |
+|---|---|---|
+| 2948 | "comes down to" phrase | " to" in "it all comes down to" |
+| 9434 | "in response to" phrase | " response" after "in" |
+| 11721 | Sentence-initial "Until" | "Until recently", "Until now" |
+| 18621 | Expected event prediction | " expected" in "the trial is expected to last" |
+| 3927 | Unicode replacement character | the first byte of a split multi-byte character |
+
+### Steering
+
+Adding a feature's decoder direction to the residual stream while GPT-2 generates. The coefficient is in units of the feature's largest natural activation. Same prompt and seed in each row.
+
+**Feature 16163, "neural terminology"**, prompt "The new report says that":
+
+| Coef | Continuation |
+|---|---|
+| 0 | more than 6 million people have been affected by climate change, with the number of people living in developing countries experiencing serious and irreversible health problems. |
+| 1 | when a brain is infected with a new neurotoxin, it is the same cells that do the same response. They think the connection is related to the ability of the neurons to be activated. |
+| 4 | tube tube tube tube tube tube to.g cells pathways project tube tube tube tube tube activity … |
+
+**Feature 461, "galaxy mention"**, prompt "Yesterday I went to the":
+
+| Coef | Continuation |
+|---|---|
+| 0 | Olympic Trials to complete the short to the Olympic Marathon. |
+| 2 | Olympic gold-famed city to learn about the range of galaxies in the same cluster of dust-filled dust rich regions of Earth. |
+
+At 1–2× the topic shifts and the text stays mostly fluent. At 4× every feature tried breaks the text. More samples are in the browser's Steering tab.
+
+### Limitations
+
+- One layer, one width, one k. There was no sweep.
+- The browser shows 1,000 of the 24,576 features: all 200 labeled ones plus 800 random live ones.
+- Labels come from one LLM pass over 10 snippets per feature, and only 12 were checked by hand.
+- The jb comparison runs on the same tokens and code path, but the two SAEs were trained differently. It is a sanity check, not a controlled experiment.
 
 ## What an SAE does here
 

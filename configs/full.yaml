@@ -5,7 +5,7 @@ sae:
   k: 32
   k_aux: 384
   dead_after_tokens: 10_000_000
-device: cuda
+device: auto
 total_tokens: 200_000_000
 buffer_size: 1_048_576
 model_batch_rows: 256
