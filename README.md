@@ -2,7 +2,7 @@
 
 A sparse autoencoder (SAE) trained from scratch on GPT-2 small, plus a browser for the features it learned.
 
-**[Browse the features](PAGES_URL)** · 24,576 features · k = 32 · GPT-2 small, layer 6 residual stream · 200M training tokens
+**[Browse the features](https://cameronervin.github.io/sparse-autoencoder/)** · 24,576 features · k = 32 · GPT-2 small, layer 6 residual stream · 200M training tokens
 
 ## Results
 
